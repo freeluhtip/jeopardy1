@@ -2,531 +2,606 @@
 
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Acatonics Jeopardy</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      background: linear-gradient(160deg, #060b2a 0%, #0a1640 60%, #0f1f5c 100%);
-      min-height: 100vh;
-      font-family: 'Georgia', 'Times New Roman', serif;
-      color: #fff;
-    }
-    button { font-family: 'Georgia', 'Times New Roman', serif; }
-    input  { font-family: 'Georgia', 'Times New Roman', serif; }
-    /* hover effect on value cells */
-    .val-cell:hover { filter: brightness(1.25); transform: scale(1.03); }
-    .val-cell { transition: filter 0.15s, transform 0.15s; }
-    /* score btn hover */
-    .score-btn:hover { opacity: 0.85; }
-    /* show-btn hover */
-    .show-btn:hover { filter: brightness(1.1); }
-    /* close-btn hover */
-    .close-btn:hover { border-color: #8899cc; color: #ccd8ff; }
-    /* team-count-btn hover */
-    .tcount-btn:hover { filter: brightness(1.15); }
-  </style>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Acatonics Jeopardy</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+background: linear-gradient(160deg, #060b2a 0%, #0a1640 60%, #0f1f5c 100%);
+min-height: 100vh;
+font-family: Georgia, ‘Times New Roman’, serif;
+color: #fff;
+padding: 24px 8px 48px;
+display: flex;
+flex-direction: column;
+align-items: center;
+}
+
+/* ── Title ── */
+.title-row {
+display: flex;
+align-items: center;
+gap: 14px;
+margin-bottom: 22px;
+}
+.star { color: #FFD700; font-size: 2rem; text-shadow: 0 0 12px #FFD700; }
+h1 {
+font-size: clamp(1.3rem, 4vw, 2.5rem);
+font-weight: bold;
+letter-spacing: .12em;
+color: #FFD700;
+text-shadow: 0 2px 18px rgba(255,215,0,.55);
+text-align: center;
+}
+
+/* ── Board ── */
+#board {
+display: grid;
+gap: 5px;
+width: 100%;
+max-width: 1000px;
+margin-bottom: 28px;
+padding: 0 4px;
+}
+
+.cat-cell {
+background: linear-gradient(180deg, #1a2e6e, #0d1b4e);
+border: 2px solid #2a4ab0;
+border-radius: 6px;
+padding: 10px 6px;
+text-align: center;
+font-weight: bold;
+font-size: clamp(.5rem, 1.2vw, .8rem);
+letter-spacing: .05em;
+text-transform: uppercase;
+color: #c8d8ff;
+min-height: 65px;
+display: flex;
+align-items: center;
+justify-content: center;
+}
+
+.val-cell {
+background: linear-gradient(180deg, #1640a8, #0d2980);
+border: 2px solid #2a5ae0;
+border-radius: 6px;
+min-height: 65px;
+display: flex;
+align-items: center;
+justify-content: center;
+cursor: pointer;
+box-shadow: 0 2px 8px rgba(0,0,0,.4);
+transition: filter .15s, transform .15s;
+}
+.val-cell:hover { filter: brightness(1.3); transform: scale(1.04); }
+.val-cell.used {
+background: linear-gradient(180deg, #0a1640, #060b2a);
+border-color: #1a2e5a;
+box-shadow: none;
+cursor: default;
+transform: none !important;
+filter: none !important;
+pointer-events: none;
+}
+
+.dollar {
+font-size: clamp(1rem, 2.5vw, 1.9rem);
+font-weight: bold;
+color: #FFD700;
+text-shadow: 0 0 10px rgba(255,215,0,.6), 0 2px 4px rgba(0,0,0,.8);
+}
+.used-check { opacity: .15; font-size: 1.2rem; }
+
+/* ── Scoreboard ── */
+#scoreboard {
+width: 100%;
+max-width: 1000px;
+background: rgba(10,20,60,.7);
+border: 2px solid #2a4ab0;
+border-radius: 12px;
+padding: 16px 18px;
+}
+.sb-title {
+text-align: center;
+font-size: .78rem;
+letter-spacing: .16em;
+color: #c8d8ff;
+margin-bottom: 12px;
+text-transform: uppercase;
+font-weight: bold;
+}
+.teams-row {
+display: flex;
+gap: 10px;
+justify-content: center;
+flex-wrap: wrap;
+}
+.team-card {
+background: rgba(20,30,80,.8);
+border: 2px solid;
+border-radius: 10px;
+padding: 12px 14px;
+min-width: 130px;
+flex: 1;
+max-width: 200px;
+text-align: center;
+}
+.team-name {
+font-weight: bold;
+font-size: .82rem;
+margin-bottom: 4px;
+cursor: pointer;
+letter-spacing: .04em;
+}
+.team-name:hover { opacity: .8; }
+.team-name-input {
+background: rgba(255,255,255,.1);
+border: 1px solid;
+border-radius: 4px;
+color: inherit;
+padding: 3px 7px;
+font-size: .82rem;
+text-align: center;
+width: 100%;
+outline: none;
+font-family: inherit;
+}
+.team-score {
+font-size: 1.75rem;
+font-weight: bold;
+color: #fff;
+margin: 5px 0;
+font-variant-numeric: tabular-nums;
+}
+.btn-row { display: flex; gap: 7px; justify-content: center; margin-top: 5px; }
+.score-btn {
+border: none;
+border-radius: 6px;
+color: #fff;
+font-size: 1.15rem;
+font-weight: bold;
+width: 34px;
+height: 34px;
+cursor: pointer;
+transition: opacity .15s;
+font-family: inherit;
+}
+.score-btn:hover { opacity: .8; }
+.btn-plus  { background: #1a6e2e; }
+.btn-minus { background: #8b1a1a; }
+
+.team-count-row {
+display: flex;
+align-items: center;
+justify-content: center;
+gap: 8px;
+margin-top: 14px;
+}
+.tc-label { color: #8899cc; font-size: .78rem; letter-spacing: .06em; text-transform: uppercase; }
+.tc-btn {
+border: 2px solid #FFD700;
+border-radius: 6px;
+padding: 4px 11px;
+cursor: pointer;
+font-weight: bold;
+font-size: .82rem;
+transition: all .15s;
+font-family: inherit;
+}
+.tc-btn.active { background: #FFD700; color: #0a0e2a; }
+.tc-btn:not(.active) { background: #1a2e5a; color: #FFD700; }
+
+/* ── Modal ── */
+#overlay {
+display: none;
+position: fixed;
+inset: 0;
+background: rgba(0,0,0,.88);
+align-items: center;
+justify-content: center;
+z-index: 999;
+padding: 16px;
+}
+#overlay.open { display: flex; }
+
+#modal {
+background: linear-gradient(160deg, #0d2080, #060b3a);
+border: 3px solid #FFD700;
+border-radius: 16px;
+padding: 36px 40px;
+max-width: 600px;
+width: 100%;
+text-align: center;
+box-shadow: 0 0 60px rgba(255,215,0,.28), 0 20px 60px rgba(0,0,0,.8);
+}
+.modal-cat {
+font-size: .75rem;
+letter-spacing: .2em;
+color: #8899cc;
+text-transform: uppercase;
+margin-bottom: 8px;
+}
+.modal-val {
+font-size: 2.4rem;
+font-weight: bold;
+color: #FFD700;
+text-shadow: 0 0 20px rgba(255,215,0,.65);
+margin-bottom: 22px;
+}
+.modal-clue {
+font-size: clamp(1rem, 2.5vw, 1.22rem);
+line-height: 1.65;
+color: #dde8ff;
+margin-bottom: 26px;
+font-style: italic;
+}
+.modal-answer {
+display: none;
+font-size: clamp(1.1rem, 2.5vw, 1.45rem);
+font-weight: bold;
+color: #FFD700;
+background: rgba(255,215,0,.1);
+border: 2px solid rgba(255,215,0,.4);
+border-radius: 10px;
+padding: 15px 22px;
+margin-bottom: 16px;
+text-shadow: 0 0 12px rgba(255,215,0,.35);
+}
+.modal-answer.visible { display: block; }
+.modal-hint {
+display: none;
+color: #6688bb;
+font-size: .78rem;
+font-style: italic;
+margin-bottom: 16px;
+}
+.modal-hint.visible { display: block; }
+
+#reveal-btn {
+background: linear-gradient(135deg, #FFD700, #e6a800);
+border: none;
+border-radius: 10px;
+padding: 13px 30px;
+font-size: .95rem;
+font-weight: bold;
+color: #0a0e2a;
+cursor: pointer;
+letter-spacing: .06em;
+text-transform: uppercase;
+margin: 0 auto 18px;
+box-shadow: 0 4px 20px rgba(255,215,0,.38);
+font-family: inherit;
+display: block;
+transition: filter .15s;
+}
+#reveal-btn:hover { filter: brightness(1.1); }
+#reveal-btn.hidden { display: none; }
+
+#close-btn {
+background: transparent;
+border: 2px solid #4a6aaa;
+border-radius: 8px;
+padding: 9px 22px;
+color: #8899cc;
+font-size: .82rem;
+cursor: pointer;
+display: block;
+margin: 0 auto;
+letter-spacing: .04em;
+font-family: inherit;
+transition: border-color .15s, color .15s;
+}
+#close-btn:hover { border-color: #8899cc; color: #ccd8ff; }
+
+@media (max-width: 600px) {
+#modal { padding: 24px 18px; }
+}
+</style>
+
 </head>
 <body>
-  <div id="root"></div>
 
-  <script type="text/babel">
-    const { useState } = React;
+<div class="title-row">
+  <span class="star">&#9733;</span>
+  <h1>ACATONICS JEOPARDY</h1>
+  <span class="star">&#9733;</span>
+</div>
 
-    const CATEGORIES = [
-      "INSIDE JOKES",
-      "TYPOS & SPELLING",
-      "THE SET",
-      "BIRTHDAYS",
-      "THE COMPETITION",
-      "LORE & NICKNAMES",
-    ];
+<div id="board"></div>
 
-    const VALUES = [200, 400, 600, 800, 1000];
+<div id="scoreboard">
+  <div class="sb-title">Scoreboard</div>
+  <div class="teams-row" id="teams-row"></div>
+  <div class="team-count-row">
+    <span class="tc-label">Teams:</span>
+    <button class="tc-btn" id="tc2">2</button>
+    <button class="tc-btn" id="tc3">3</button>
+    <button class="tc-btn" id="tc4">4</button>
+  </div>
+</div>
 
-    const QUESTIONS = {
-      "INSIDE JOKES": [
-        {
-          clue: "Luca's legendary typo of the word "stop" — instantly adopted by the whole group.",
-          answer: "STIP",
-        },
-        {
-          clue: "Isa's nickname for Nicole, formed by swapping the first syllable.",
-          answer: "Jocole",
-        },
-        {
-          clue: "This addictive mobile game made a comeback on every aca trip.",
-          answer: "Blick Block",
-        },
-        {
-          clue: "Ivan horrified the group by doing THIS to his kiwis.",
-          answer: "Eating them with the skin on",
-        },
-        {
-          clue: "Benny's elderly relative unknowingly gifted him an item featuring this inappropriate acronym.",
-          answer: "MILF",
-        },
-      ],
-      "TYPOS & SPELLING": [
-        {
-          clue: 'Nicole\'s autocorrect rendered the word "shopping" as this.',
-          answer: "Dhoppibg",
-        },
-        {
-          clue: "Nura was CERTAIN this was the correct spelling of the chicken restaurant's name.",
-          answer: "Raisin Canes (for Raising Cane's)",
-        },
-        {
-          clue: 'Nura typed this word when she meant "rumor," instantly cementing it as lore.',
-          answer: "Trumor",
-        },
-        {
-          clue: 'Ashlyn thanked Luca with this word instead of "thanks."',
-          answer: "Fhanjs",
-        },
-        {
-          clue: "Nura boasted about taking 5 years of this subject — then misspelled it in the very same message.",
-          answer: 'Spanish (typed "spainish")',
-        },
-      ],
-      "THE SET": [
-        {
-          clue: "This Latin choral piece served as the group's ominous competition opener.",
-          answer: "Crucifixus",
-        },
-        {
-          clue: "Nicole's solo song in the competition set.",
-          answer: "Vampire",
-        },
-        {
-          clue: "Wilson suggested cutting this song because it didn't fit the dark, vampirey theme.",
-          answer: "In My Blood",
-        },
-        {
-          clue: "This external arranger worked with Schwartz to shape the Acatonics' competition set.",
-          answer: "Wilson",
-        },
-        {
-          clue: 'Wilson suggested adding this "chant-like" song from the movie Sinner as a replacement.',
-          answer: "Wicked Ones",
-        },
-      ],
-      "BIRTHDAYS": [
-        {
-          clue: "Her birthday falls on September 19th — the same day as a major performance.",
-          answer: "Nura",
-        },
-        {
-          clue: "His birthday was celebrated at midnight by the whole group during the Boston trip.",
-          answer: "Ray",
-        },
-        {
-          clue: "She turned 18 on November 5th, with Ryan literally counting down the seconds to text first.",
-          answer: "Megan",
-        },
-        {
-          clue: "The group was genuinely unsure if THIS person's September 14th birthday was real or just a troll.",
-          answer: "Kenny",
-        },
-        {
-          clue: "The first big birthday celebrated in the group chat, on July 16th.",
-          answer: "Mona",
-        },
-      ],
-      "THE COMPETITION": [
-        {
-          clue: "The city where the Acatonics won their ICHSA Quarterfinal.",
-          answer: "Boston",
-        },
-        {
-          clue: "The group that finished second to the Acatonics at the Boston Quarterfinal.",
-          answer: "Sol",
-        },
-        {
-          clue: 'This Boston judge called the Acatonics "moody babies" and said their choreo was "so camp."',
-          answer: "Christopher (from Baltimore)",
-        },
-        {
-          clue: "Despite receiving a 5/10 on soloist interpretation, the group received THIS award nomination.",
-          answer: "Best Soloist nomination",
-        },
-        {
-          clue: "The date of the Acatonics' ICHSA Semifinals.",
-          answer: "March 28, 2026",
-        },
-      ],
-      "LORE & NICKNAMES": [
-        {
-          clue: "Ray and Claire share this family relationship.",
-          answer: "They are siblings (brother & sister)",
-        },
-        {
-          clue: "Nura intentionally leaped into THIS while trying to jump between logs with a friend.",
-          answer: "A creek / body of water",
-        },
-        {
-          clue: "Ivan's beloved food-based nickname, earned by his legendary appetite.",
-          answer: "BBI Mega Mac",
-        },
-        {
-          clue: "In Mona and Nura's Hunger Games draft, Isa and Ahmed were assigned to this district.",
-          answer: "District 11 (Agriculture)",
-        },
-        {
-          clue: "This teacher was allegedly escorted from Wootton after accidentally screen-sharing adult content on the classroom Promethean board.",
-          answer: "Ticona",
-        },
-      ],
-    };
+<div id="overlay">
+  <div id="modal">
+    <div class="modal-cat"  id="modal-cat"></div>
+    <div class="modal-val"  id="modal-val"></div>
+    <div class="modal-clue" id="modal-clue"></div>
+    <div class="modal-answer" id="modal-answer"></div>
+    <div class="modal-hint"   id="modal-hint">Use + / &#8722; on the scoreboard to award points!</div>
+    <button id="reveal-btn">Reveal Answer</button>
+    <button id="close-btn">&#10005; Close &amp; Mark Used</button>
+  </div>
+</div>
 
-    const TEAM_COLORS = ["#FFD700", "#00C9FF", "#FF6B9D", "#7CFF6B"];
-    const DEFAULT_NAMES = ["Team 1", "Team 2", "Team 3", "Team 4"];
+<script>
+// ── Data ──────────────────────────────────────────────────────────────────────
+var CATEGORIES = [
+  "INSIDE JOKES",
+  "TYPOS & SPELLING",
+  "THE SET",
+  "BIRTHDAYS",
+  "THE COMPETITION",
+  "LORE & NICKNAMES"
+];
 
-    function App() {
-      const [used, setUsed]           = useState({});
-      const [active, setActive]       = useState(null);  // { cat, val, key }
-      const [showAns, setShowAns]     = useState(false);
-      const [scores, setScores]       = useState([0, 0, 0, 0]);
-      const [names, setNames]         = useState(DEFAULT_NAMES);
-      const [editIdx, setEditIdx]     = useState(null);
-      const [editVal, setEditVal]     = useState("");
-      const [numTeams, setNumTeams]   = useState(2);
+var VALUES = [200, 400, 600, 800, 1000];
 
-      const openCell = (cat, val) => {
-        const key = `${cat}||${val}`;
-        if (used[key]) return;
-        setActive({ cat, val, key });
-        setShowAns(false);
-      };
+var QUESTIONS = {
+  "INSIDE JOKES": [
+    { clue: "Luca's legendary typo of the word \"stop\" — instantly adopted by the whole group.",
+      answer: "STIP" },
+    { clue: "Isa's nickname for Nicole, formed by swapping the first syllable.",
+      answer: "Jocole" },
+    { clue: "This addictive mobile game made a comeback on every aca trip.",
+      answer: "Blick Block" },
+    { clue: "Ivan horrified the group by doing THIS to his kiwis.",
+      answer: "Eating them with the skin on" },
+    { clue: "Benny's elderly relative unknowingly gifted him an item featuring this inappropriate acronym.",
+      answer: "MILF" }
+  ],
+  "TYPOS & SPELLING": [
+    { clue: "Nicole's autocorrect rendered the word \"shopping\" as this.",
+      answer: "Dhoppibg" },
+    { clue: "Nura was CERTAIN this was the correct spelling of the chicken restaurant's name.",
+      answer: "Raisin Canes (for Raising Cane's)" },
+    { clue: "Nura typed this word when she meant \"rumor,\" instantly cementing it as lore.",
+      answer: "Trumor" },
+    { clue: "Ashlyn thanked Luca with this word instead of \"thanks.\"",
+      answer: "Fhanjs" },
+    { clue: "Nura boasted about taking 5 years of this subject — then misspelled it in the very same message.",
+      answer: "Spanish (typed \"spainish\")" }
+  ],
+  "THE SET": [
+    { clue: "This Latin choral piece served as the group's ominous competition opener.",
+      answer: "Crucifixus" },
+    { clue: "Nicole's solo song in the competition set.",
+      answer: "Vampire" },
+    { clue: "Wilson suggested cutting this song because it didn't fit the dark, vampirey theme.",
+      answer: "In My Blood" },
+    { clue: "This external arranger worked with Schwartz to shape the Acatonics' competition set.",
+      answer: "Wilson" },
+    { clue: "Wilson suggested adding this \"chant-like\" song from the movie Sinner as a replacement.",
+      answer: "Wicked Ones" }
+  ],
+  "BIRTHDAYS": [
+    { clue: "Her birthday falls on September 19th — the same day as a major performance.",
+      answer: "Nura" },
+    { clue: "His birthday was celebrated at midnight by the whole group during the Boston trip.",
+      answer: "Ray" },
+    { clue: "She turned 18 on November 5th, with Ryan literally counting down the seconds to text first.",
+      answer: "Megan" },
+    { clue: "The group was genuinely unsure if THIS person's September 14th birthday was real or just a troll.",
+      answer: "Kenny" },
+    { clue: "The first big birthday celebrated in the group chat, on July 16th.",
+      answer: "Mona" }
+  ],
+  "THE COMPETITION": [
+    { clue: "The city where the Acatonics won their ICHSA Quarterfinal.",
+      answer: "Boston" },
+    { clue: "The group that finished second to the Acatonics at the Boston Quarterfinal.",
+      answer: "Sol" },
+    { clue: "This Boston judge called the Acatonics \"moody babies\" and said their choreo was \"so camp.\"",
+      answer: "Christopher (from Baltimore)" },
+    { clue: "Despite receiving a 5/10 on soloist interpretation, the group received THIS award nomination.",
+      answer: "Best Soloist nomination" },
+    { clue: "The date of the Acatonics' ICHSA Semifinals.",
+      answer: "March 28, 2026" }
+  ],
+  "LORE & NICKNAMES": [
+    { clue: "Ray and Claire share this family relationship.",
+      answer: "They are siblings (brother & sister)" },
+    { clue: "Nura intentionally leaped into THIS while trying to jump between logs with a friend.",
+      answer: "A creek / body of water" },
+    { clue: "Ivan's beloved food-based nickname, earned by his legendary appetite.",
+      answer: "BBI Mega Mac" },
+    { clue: "In Mona and Nura's Hunger Games draft, Isa and Ahmed were assigned to this district.",
+      answer: "District 11 (Agriculture)" },
+    { clue: "This teacher was allegedly escorted from Wootton after accidentally screen-sharing adult content on the classroom Promethean board.",
+      answer: "Ticona" }
+  ]
+};
 
-      const closeModal = () => {
-        if (active) setUsed(prev => ({ ...prev, [active.key]: true }));
-        setActive(null);
-        setShowAns(false);
-      };
+var TEAM_COLORS = ["#FFD700", "#00C9FF", "#FF6B9D", "#7CFF6B"];
 
-      const adjust = (i, dir) => {
-        if (!active) return;
-        setScores(prev => {
-          const next = [...prev];
-          next[i] += dir * active.val;
-          return next;
-        });
-      };
+// ── State ─────────────────────────────────────────────────────────────────────
+var used      = {};
+var activeKey = null;
+var scores    = [0, 0, 0, 0];
+var names     = ["Team 1", "Team 2", "Team 3", "Team 4"];
+var numTeams  = 2;
 
-      const commitName = (i) => {
-        if (editVal.trim()) {
-          setNames(prev => { const n=[...prev]; n[i]=editVal.trim(); return n; });
-        }
-        setEditIdx(null);
-      };
+// ── Build Board ───────────────────────────────────────────────────────────────
+function buildBoard() {
+  var board = document.getElementById("board");
+  board.style.gridTemplateColumns = "repeat(" + CATEGORIES.length + ", 1fr)";
+  board.innerHTML = "";
 
-      const q = active
-        ? QUESTIONS[active.cat][VALUES.indexOf(active.val)]
-        : null;
+  CATEGORIES.forEach(function(cat) {
+    var el = document.createElement("div");
+    el.className = "cat-cell";
+    el.textContent = cat;
+    board.appendChild(el);
+  });
 
-      // ── Board ───────────────────────────────────────────────────────────────
-      const boardStyle = {
-        display: "grid",
-        gridTemplateColumns: `repeat(${CATEGORIES.length}, 1fr)`,
-        gap: "5px",
-        width: "100%",
-        maxWidth: "1000px",
-        margin: "0 auto 28px",
-        padding: "0 8px",
-      };
+  VALUES.forEach(function(val) {
+    CATEGORIES.forEach(function(cat) {
+      var key = cat + "||" + val;
+      var el  = document.createElement("div");
+      el.className = "val-cell" + (used[key] ? " used" : "");
+      el.id = "cell-" + key;
 
-      return (
-        <div style={{ minHeight:"100vh", display:"flex", flexDirection:"column", alignItems:"center", padding:"24px 8px 48px" }}>
+      if (used[key]) {
+        var check = document.createElement("span");
+        check.className = "used-check";
+        check.textContent = "\u2713";
+        el.appendChild(check);
+      } else {
+        var dollar = document.createElement("span");
+        dollar.className = "dollar";
+        dollar.textContent = "$" + val;
+        el.appendChild(dollar);
+        (function(c, v) {
+          el.addEventListener("click", function() { openCell(c, v); });
+        })(cat, val);
+      }
+      board.appendChild(el);
+    });
+  });
+}
 
-          {/* ── Title ── */}
-          <div style={{ display:"flex", alignItems:"center", gap:"14px", marginBottom:"22px" }}>
-            <span style={{ color:"#FFD700", fontSize:"2rem", textShadow:"0 0 12px #FFD700" }}>★</span>
-            <h1 style={{
-              fontSize:"clamp(1.3rem,4vw,2.5rem)",
-              fontWeight:"bold",
-              letterSpacing:"0.12em",
-              color:"#FFD700",
-              textShadow:"0 2px 18px rgba(255,215,0,.55)",
-              margin:0,
-              textAlign:"center",
-            }}>ACATONICS JEOPARDY</h1>
-            <span style={{ color:"#FFD700", fontSize:"2rem", textShadow:"0 0 12px #FFD700" }}>★</span>
-          </div>
+// ── Scoreboard ────────────────────────────────────────────────────────────────
+function buildScoreboard() {
+  var row = document.getElementById("teams-row");
+  row.innerHTML = "";
 
-          {/* ── Board ── */}
-          <div style={boardStyle}>
-            {/* Category headers */}
-            {CATEGORIES.map(cat => (
-              <div key={cat} style={{
-                background:"linear-gradient(180deg,#1a2e6e,#0d1b4e)",
-                border:"2px solid #2a4ab0",
-                borderRadius:"6px",
-                padding:"10px 6px",
-                textAlign:"center",
-                fontWeight:"bold",
-                fontSize:"clamp(0.5rem,1.2vw,0.8rem)",
-                letterSpacing:"0.05em",
-                textTransform:"uppercase",
-                color:"#c8d8ff",
-                minHeight:"65px",
-                display:"flex",
-                alignItems:"center",
-                justifyContent:"center",
-              }}>
-                {cat}
-              </div>
-            ))}
+  for (var i = 0; i < numTeams; i++) {
+    (function(idx) {
+      var color = TEAM_COLORS[idx];
+      var card  = document.createElement("div");
+      card.className = "team-card";
+      card.style.borderColor = color;
 
-            {/* Value cells */}
-            {VALUES.map(val =>
-              CATEGORIES.map(cat => {
-                const key  = `${cat}||${val}`;
-                const gone = !!used[key];
-                return (
-                  <div
-                    key={key}
-                    className={gone ? "" : "val-cell"}
-                    onClick={() => openCell(cat, val)}
-                    style={{
-                      background: gone
-                        ? "linear-gradient(180deg,#0a1640,#060b2a)"
-                        : "linear-gradient(180deg,#1640a8,#0d2980)",
-                      border: gone ? "2px solid #1a2e5a" : "2px solid #2a5ae0",
-                      borderRadius:"6px",
-                      minHeight:"65px",
-                      display:"flex",
-                      alignItems:"center",
-                      justifyContent:"center",
-                      cursor: gone ? "default" : "pointer",
-                      boxShadow: gone ? "none" : "0 2px 8px rgba(0,0,0,.4)",
-                    }}
-                  >
-                    {gone
-                      ? <span style={{ opacity:0.15, fontSize:"1.2rem" }}>✓</span>
-                      : <span style={{
-                          fontSize:"clamp(1rem,2.5vw,1.9rem)",
-                          fontWeight:"bold",
-                          color:"#FFD700",
-                          textShadow:"0 0 10px rgba(255,215,0,.6),0 2px 4px rgba(0,0,0,.8)",
-                        }}>${val}</span>
-                    }
-                  </div>
-                );
-              })
-            )}
-          </div>
+      var nameEl = document.createElement("div");
+      nameEl.className = "team-name";
+      nameEl.style.color = color;
+      nameEl.textContent = names[idx] + " \u270F\uFE0F";
+      nameEl.addEventListener("click", function() { startEdit(idx, nameEl, color); });
 
-          {/* ── Scoreboard ── */}
-          <div style={{
-            width:"100%",
-            maxWidth:"1000px",
-            background:"rgba(10,20,60,.7)",
-            border:"2px solid #2a4ab0",
-            borderRadius:"12px",
-            padding:"16px 20px",
-            margin:"0 8px",
-          }}>
-            <div style={{ textAlign:"center", fontSize:"0.8rem", letterSpacing:"0.16em", color:"#c8d8ff", marginBottom:"12px", textTransform:"uppercase", fontWeight:"bold" }}>
-              Scoreboard
-            </div>
+      var scoreEl = document.createElement("div");
+      scoreEl.className = "team-score";
+      scoreEl.id = "score-" + idx;
+      scoreEl.textContent = "$" + scores[idx].toLocaleString();
 
-            <div style={{ display:"flex", gap:"10px", justifyContent:"center", flexWrap:"wrap" }}>
-              {scores.slice(0, numTeams).map((score, i) => (
-                <div key={i} style={{
-                  background:"rgba(20,30,80,.8)",
-                  border:`2px solid ${TEAM_COLORS[i]}`,
-                  borderRadius:"10px",
-                  padding:"12px 14px",
-                  minWidth:"130px",
-                  flex:"1",
-                  maxWidth:"200px",
-                  textAlign:"center",
-                }}>
-                  {editIdx === i
-                    ? <input
-                        autoFocus
-                        value={editVal}
-                        onChange={e => setEditVal(e.target.value)}
-                        onBlur={() => commitName(i)}
-                        onKeyDown={e => { if(e.key==="Enter") commitName(i); }}
-                        style={{
-                          background:"rgba(255,255,255,.1)",
-                          border:`1px solid ${TEAM_COLORS[i]}`,
-                          borderRadius:"4px",
-                          color:TEAM_COLORS[i],
-                          padding:"3px 7px",
-                          fontSize:"0.82rem",
-                          textAlign:"center",
-                          width:"100%",
-                          outline:"none",
-                        }}
-                      />
-                    : <div
-                        onClick={() => { setEditIdx(i); setEditVal(names[i]); }}
-                        title="Click to rename"
-                        style={{ fontWeight:"bold", fontSize:"0.82rem", color:TEAM_COLORS[i], marginBottom:"4px", cursor:"pointer", letterSpacing:"0.04em" }}
-                      >
-                        {names[i]} ✏️
-                      </div>
-                  }
+      var btnRow = document.createElement("div");
+      btnRow.className = "btn-row";
 
-                  <div style={{ fontSize:"1.75rem", fontWeight:"bold", color:"#fff", margin:"5px 0", fontVariantNumeric:"tabular-nums" }}>
-                    ${score.toLocaleString()}
-                  </div>
+      var plus = document.createElement("button");
+      plus.className = "score-btn btn-plus";
+      plus.textContent = "+";
+      plus.title = "Award points";
+      plus.addEventListener("click", function() { adjustScore(idx, 1); });
 
-                  <div style={{ display:"flex", gap:"7px", justifyContent:"center", marginTop:"5px" }}>
-                    <button
-                      className="score-btn"
-                      onClick={() => adjust(i, 1)}
-                      title="Award points"
-                      style={{ background:"#1a6e2e", border:"none", borderRadius:"6px", color:"#fff", fontSize:"1.15rem", fontWeight:"bold", width:"34px", height:"34px", cursor:"pointer" }}
-                    >+</button>
-                    <button
-                      className="score-btn"
-                      onClick={() => adjust(i, -1)}
-                      title="Deduct points"
-                      style={{ background:"#8b1a1a", border:"none", borderRadius:"6px", color:"#fff", fontSize:"1.15rem", fontWeight:"bold", width:"34px", height:"34px", cursor:"pointer" }}
-                    >−</button>
-                  </div>
-                </div>
-              ))}
-            </div>
+      var minus = document.createElement("button");
+      minus.className = "score-btn btn-minus";
+      minus.textContent = "\u2212";
+      minus.title = "Deduct points";
+      minus.addEventListener("click", function() { adjustScore(idx, -1); });
 
-            {/* Team count toggle */}
-            <div style={{ display:"flex", alignItems:"center", justifyContent:"center", gap:"8px", marginTop:"14px" }}>
-              <span style={{ color:"#8899cc", fontSize:"0.78rem", letterSpacing:"0.06em", textTransform:"uppercase" }}>Teams:</span>
-              {[2,3,4].map(n => (
-                <button
-                  key={n}
-                  className="tcount-btn"
-                  onClick={() => setNumTeams(n)}
-                  style={{
-                    border:"2px solid #FFD700",
-                    borderRadius:"6px",
-                    padding:"4px 11px",
-                    cursor:"pointer",
-                    fontWeight:"bold",
-                    fontSize:"0.82rem",
-                    background: numTeams===n ? "#FFD700" : "#1a2e5a",
-                    color:        numTeams===n ? "#0a0e2a" : "#FFD700",
-                    transition:"all 0.15s",
-                  }}
-                >
-                  {n}
-                </button>
-              ))}
-            </div>
-          </div>
+      btnRow.appendChild(plus);
+      btnRow.appendChild(minus);
+      card.appendChild(nameEl);
+      card.appendChild(scoreEl);
+      card.appendChild(btnRow);
+      row.appendChild(card);
+    })(i);
+  }
 
-          {/* ── Modal ── */}
-          {active && q && (
-            <div
-              onClick={closeModal}
-              style={{
-                position:"fixed", inset:0,
-                background:"rgba(0,0,0,.87)",
-                display:"flex", alignItems:"center", justifyContent:"center",
-                zIndex:999, padding:"16px",
-              }}
-            >
-              <div
-                onClick={e => e.stopPropagation()}
-                style={{
-                  background:"linear-gradient(160deg,#0d2080,#060b3a)",
-                  border:"3px solid #FFD700",
-                  borderRadius:"16px",
-                  padding:"36px 40px",
-                  maxWidth:"600px",
-                  width:"100%",
-                  textAlign:"center",
-                  boxShadow:"0 0 60px rgba(255,215,0,.28),0 20px 60px rgba(0,0,0,.8)",
-                }}
-              >
-                <div style={{ fontSize:"0.75rem", letterSpacing:"0.2em", color:"#8899cc", textTransform:"uppercase", marginBottom:"8px" }}>
-                  {active.cat}
-                </div>
-                <div style={{ fontSize:"2.4rem", fontWeight:"bold", color:"#FFD700", textShadow:"0 0 20px rgba(255,215,0,.65)", marginBottom:"22px" }}>
-                  ${active.val}
-                </div>
-                <div style={{ fontSize:"clamp(1rem,2.5vw,1.25rem)", lineHeight:"1.65", color:"#dde8ff", marginBottom:"26px", fontStyle:"italic" }}>
-                  {q.clue}
-                </div>
+  ["tc2","tc3","tc4"].forEach(function(id) {
+    var btn = document.getElementById(id);
+    if (btn) btn.classList.toggle("active", parseInt(id.replace("tc","")) === numTeams);
+  });
+}
 
-                {showAns
-                  ? <>
-                      <div style={{
-                        fontSize:"clamp(1.1rem,2.5vw,1.5rem)",
-                        fontWeight:"bold",
-                        color:"#FFD700",
-                        background:"rgba(255,215,0,.1)",
-                        border:"2px solid rgba(255,215,0,.4)",
-                        borderRadius:"10px",
-                        padding:"15px 22px",
-                        marginBottom:"18px",
-                        textShadow:"0 0 12px rgba(255,215,0,.35)",
-                      }}>
-                        {q.answer}
-                      </div>
-                      <p style={{ color:"#6688bb", fontSize:"0.78rem", fontStyle:"italic", marginBottom:"18px" }}>
-                        Use + / − on the scoreboard to award points!
-                      </p>
-                    </>
-                  : <button
-                      className="show-btn"
-                      onClick={() => setShowAns(true)}
-                      style={{
-                        background:"linear-gradient(135deg,#FFD700,#e6a800)",
-                        border:"none",
-                        borderRadius:"10px",
-                        padding:"13px 30px",
-                        fontSize:"0.95rem",
-                        fontWeight:"bold",
-                        color:"#0a0e2a",
-                        cursor:"pointer",
-                        letterSpacing:"0.06em",
-                        textTransform:"uppercase",
-                        marginBottom:"18px",
-                        boxShadow:"0 4px 20px rgba(255,215,0,.38)",
-                        display:"block",
-                        margin:"0 auto 18px",
-                      }}
-                    >
-                      Reveal Answer
-                    </button>
-                }
+function startEdit(idx, nameEl, color) {
+  var input = document.createElement("input");
+  input.className = "team-name-input";
+  input.style.borderColor = color;
+  input.style.color = color;
+  input.value = names[idx];
+  nameEl.replaceWith(input);
+  input.focus();
 
-                <button
-                  className="close-btn"
-                  onClick={closeModal}
-                  style={{
-                    background:"transparent",
-                    border:"2px solid #4a6aaa",
-                    borderRadius:"8px",
-                    padding:"9px 22px",
-                    color:"#8899cc",
-                    fontSize:"0.82rem",
-                    cursor:"pointer",
-                    display:"block",
-                    margin:"0 auto",
-                    letterSpacing:"0.04em",
-                  }}
-                >
-                  ✕ Close &amp; Mark Used
-                </button>
-              </div>
-            </div>
-          )}
-        </div>
-      );
+  function commit() {
+    if (input.value.trim()) names[idx] = input.value.trim();
+    buildScoreboard();
+  }
+  input.addEventListener("blur", commit);
+  input.addEventListener("keydown", function(e) { if (e.key === "Enter") input.blur(); });
+}
+
+function adjustScore(idx, dir) {
+  if (!activeKey) return;
+  var val = parseInt(activeKey.split("||")[1]);
+  scores[idx] += dir * val;
+  var el = document.getElementById("score-" + idx);
+  if (el) el.textContent = "$" + scores[idx].toLocaleString();
+}
+
+// ── Modal ─────────────────────────────────────────────────────────────────────
+function openCell(cat, val) {
+  var key = cat + "||" + val;
+  if (used[key]) return;
+  activeKey = key;
+
+  var idx = VALUES.indexOf(val);
+  var q   = QUESTIONS[cat][idx];
+
+  document.getElementById("modal-cat").textContent  = cat;
+  document.getElementById("modal-val").textContent  = "$" + val;
+  document.getElementById("modal-clue").textContent = q.clue;
+  document.getElementById("modal-answer").textContent = q.answer;
+
+  document.getElementById("modal-answer").classList.remove("visible");
+  document.getElementById("modal-hint").classList.remove("visible");
+  document.getElementById("reveal-btn").classList.remove("hidden");
+  document.getElementById("overlay").classList.add("open");
+}
+
+function closeModal() {
+  if (activeKey) {
+    used[activeKey] = true;
+    var cell = document.getElementById("cell-" + activeKey);
+    if (cell) {
+      cell.className = "val-cell used";
+      cell.innerHTML = '<span class="used-check">\u2713</span>';
     }
+  }
+  activeKey = null;
+  document.getElementById("overlay").classList.remove("open");
+}
 
-    ReactDOM.createRoot(document.getElementById("root")).render(<App />);
-  </script>
+// ── Event Listeners ───────────────────────────────────────────────────────────
+document.getElementById("reveal-btn").addEventListener("click", function() {
+  document.getElementById("modal-answer").classList.add("visible");
+  document.getElementById("modal-hint").classList.add("visible");
+  document.getElementById("reveal-btn").classList.add("hidden");
+});
+
+document.getElementById("close-btn").addEventListener("click", closeModal);
+
+document.getElementById("overlay").addEventListener("click", function(e) {
+  if (e.target === document.getElementById("overlay")) closeModal();
+});
+
+document.getElementById("tc2").addEventListener("click", function() { numTeams = 2; buildScoreboard(); });
+document.getElementById("tc3").addEventListener("click", function() { numTeams = 3; buildScoreboard(); });
+document.getElementById("tc4").addEventListener("click", function() { numTeams = 4; buildScoreboard(); });
+
+// ── Init ──────────────────────────────────────────────────────────────────────
+buildBoard();
+buildScoreboard();
+</script>
 
 </body>
 </html>
